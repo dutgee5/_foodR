@@ -1,8 +1,10 @@
-import {Link, Slot} from "expo-router";
+import {Link, router, Slot} from "expo-router";
 import {Alert, Text, View} from "react-native";
 import CustomInput from "@/components/CustomInput";
 import CustomButton from "@/components/CustomButton";
 import {useState} from "react";
+import {sigIn} from "@/lib/appwrite";
+import * as Sentry from "@sentry/react-native";
 
 
 export default function SignIn() {
@@ -11,14 +13,19 @@ export default function SignIn() {
     const [form, setForm] = useState({email: "", password: ""})
 
     const handleSubmit = async () => {
-        if (!form.email || !form.password) Alert.alert("Error", "Pleae check your email and password")
+        if (!form.email || !form.password) return Alert.alert("Error", "Please check your email and password")
 
         setIsSubmit(true)
 
         try {
             // signIn function
+
+            await sigIn(form.email, form.password)
+
+            router.replace("/")
         } catch (e: any) {
             Alert.alert("Error", e.message)
+            Sentry.captureEvent(e)
         } finally {
             setIsSubmit(false)
         }
@@ -54,8 +61,8 @@ export default function SignIn() {
                 onPress={handleSubmit}
             />
             <View className={"flex justify-center mt-5 flex-row gap-2"}>
-                <Text className={"base-regular text-gray-100"}>Don't have an account?</Text>
-                <Link href={"/sign-up"} className={"base-bold text-primary"}>Sign Up</Link>
+                <Text className={"base-regular text-gray-100"}>Don't have an account ?</Text>
+                <Link href={"/sign-up"} className={"base-bold text-primary"}>SignUp</Link>
             </View>
         </View>
     )

@@ -1,8 +1,9 @@
-import {Link, Slot} from "expo-router";
+import {Link, router, Slot} from "expo-router";
 import {Alert, Text, View} from "react-native";
 import CustomInput from "@/components/CustomInput";
 import CustomButton from "@/components/CustomButton";
 import {useState} from "react";
+import {createUser} from "@/lib/appwrite";
 
 
 export default function SignUp() {
@@ -11,12 +12,18 @@ export default function SignUp() {
     const [form, setForm] = useState({name: "", email: "", password: ""})
 
     const handleSubmit = async () => {
-        if (!form.name || !form.email || !form.password) Alert.alert("Error", "Pleae check your email and password")
+
+
+        if (!form.name || !form.email || !form.password) return Alert.alert("Error", "Please enter  your name, email and password")
 
         setIsSubmit(true)
 
         try {
             // signUp function
+            await createUser(form.email, form.password, form.name)
+            router.replace("/")
+
+
         } catch (e: any) {
             Alert.alert("Error", e.message)
         } finally {
